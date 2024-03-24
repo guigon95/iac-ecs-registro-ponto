@@ -4,7 +4,7 @@ resource "aws_lb" "ecs_alb" {
  security_groups    = [aws_security_group.lb_security_group.id]
  load_balancer_type = "application"
  internal = true
- subnets =  [for subnet in aws_subnet.fiap-food-public-subnet : subnet.id]
+ subnets =  [for subnet in aws_subnet.registro-ponto-public-subnet : subnet.id]
 
 }
 
@@ -14,7 +14,7 @@ resource "aws_lb_target_group" "alb_ecs_tg" {
  port        = 80
  protocol    = "HTTP"
  target_type = "ip"
- vpc_id      = aws_vpc.fiap-food-vpc.id
+ vpc_id      = aws_vpc.registro-ponto-vpc.id
 
 
  health_check {
