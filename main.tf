@@ -19,7 +19,7 @@ resource "aws_ecs_task_definition" "ecs_task_def" {
         "name": "aws.secret",
         "value": "${var.secret_key}"
      }
-     ]
+     ],
       "logConfiguration": {
             "logDriver": "awslogs",
             "options": {
