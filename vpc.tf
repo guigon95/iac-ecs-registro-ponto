@@ -1,4 +1,4 @@
-resource "aws_vpc" "fiap-food-vpc" {
+resource "aws_vpc" "registro-ponto-vpc" {
  cidr_block           = "192.168.0.0/16"
  enable_dns_support   = true
  enable_dns_hostnames = true
