@@ -13,11 +13,11 @@ resource "aws_ecs_task_definition" "ecs_task_def" {
      "environment": [
      {
         "name" : "aws.key"
-        "value" : var.access_key
+        "value" : "${var.access_key}
      },
      {
         "name" : "aws.secret"
-        "value" : var.secret_key
+        "value" : "${var.secret_key}"
      }
      "]
       "logConfiguration": {
