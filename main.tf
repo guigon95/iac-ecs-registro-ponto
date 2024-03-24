@@ -12,11 +12,11 @@ resource "aws_ecs_task_definition" "ecs_task_def" {
      "image": "${aws_ecr_repository.registro-ponto.repository_url}:latest",
      "environment": [
      {
-        "name" : "aws.key"
+        "name" : "aws.key",
         "value" : "${var.access_key}
      },
      {
-        "name" : "aws.secret"
+        "name" : "aws.secret",
         "value" : "${var.secret_key}"
      }
      "]
