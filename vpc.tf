@@ -30,11 +30,11 @@ data "aws_availability_zones" "available" {
 resource "aws_subnet" "registro-ponto-private-subnet" {
  vpc_id     = aws_vpc.registro-ponto-vpc.id
  cidr_block = "10.0.1.0/24"
- availability_zone       = "${data.aws_availability_zones.available.names[count.index]}"
+ availability_zone       = "us-east-2"
 }
 
 resource "aws_subnet" "registro-ponto-public-subnet" {
  vpc_id     = aws_vpc.registro-ponto-vpc.id
  cidr_block = "10.0.2.0/24"
- availability_zone       = "${data.aws_availability_zones.available.names[count.index]}"
+ availability_zone       = "us-east-2"
 }
