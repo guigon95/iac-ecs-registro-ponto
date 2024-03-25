@@ -78,14 +78,14 @@ resource "aws_ecs_service" "registro-ponto-ecs-service" {
  launch_type         = "FARGATE"
  ##scheduling_strategy = "REPLICA"
  desired_count       = var.desired_capacity
- depends_on      = [aws_lb_target_group.alb_ecs_tg, aws_lb_listener.ecs_alb_listener]
+# depends_on      = [aws_lb_target_group.alb_ecs_tg, aws_lb_listener.ecs_alb_listener]
 
 
- load_balancer {
-   target_group_arn = aws_lb_target_group.alb_ecs_tg.arn
-   container_name   = aws_ecs_task_definition.ecs_task_def.family
-   container_port   = var.container_port
- }
+# load_balancer {
+#   target_group_arn = aws_lb_target_group.alb_ecs_tg.arn
+#   container_name   = aws_ecs_task_definition.ecs_task_def.family
+#   container_port   = var.container_port
+# }
 
 
  network_configuration {
