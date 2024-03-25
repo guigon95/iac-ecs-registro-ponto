@@ -2,7 +2,7 @@
 resource "aws_lb" "ecs_alb" {
  name               = "Terraform-ECS-registro-ponto-ALB"
  security_groups    = [aws_security_group.lb_security_group.id]
- load_balancer_type = "application"
+ load_balancer_type = "network"
  internal = true
  subnets =  [for subnet in aws_subnet.registro-ponto-public-subnet : subnet.id]
 
