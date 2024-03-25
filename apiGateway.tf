@@ -1,6 +1,6 @@
 # Create the API Gateway HTTP endpoint
 resource "aws_api_gateway_rest_api" "aws_api_gateway_rest_api" {
-  name          = "registro-ponto-pvt-endpoint"
+  name          = "registro-ponto-gateway_rest_api"
 }
 
 resource "aws_api_gateway_resource" "aws_api_gateway_resource" {
