@@ -22,7 +22,7 @@ resource "aws_api_gateway_integration" "aws_api_gateway_integration" {
   http_method             = aws_api_gateway_method.aws_api_gateway_method.http_method
   type                    = "HTTP_PROXY"
   integration_http_method = "ANY"
-  uri                     = "http://${aws_lb.example.dns_name}/{proxy}"
+  uri                     = "http://${aws_lb.ecs_alb.dns_name}/{proxy}"
   passthrough_behavior    = "WHEN_NO_MATCH"
 }
 
