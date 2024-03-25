@@ -12,7 +12,7 @@ resource "aws_lb" "ecs_alb" {
 resource "aws_lb_target_group" "alb_ecs_tg" {
  name        = "ALB-TG"
  port        = 80
- protocol    = "HTTP"
+ protocol    = "TCP"
  target_type = "ip"
  vpc_id      = aws_vpc.registro-ponto-vpc.id
 
@@ -20,7 +20,7 @@ resource "aws_lb_target_group" "alb_ecs_tg" {
  health_check {
    healthy_threshold   = "3"
    interval            = "30"
-   protocol            = "HTTP"
+   protocol            = "TCP"
    matcher             = "200,301,302"
    path                = "/actuator/health"
    timeout             = "15"
@@ -32,7 +32,7 @@ resource "aws_lb_target_group" "alb_ecs_tg" {
 resource "aws_lb_listener" "ecs_alb_listener" {
  load_balancer_arn = aws_lb.ecs_alb.arn
  port              = 80
- protocol          = "HTTP"
+ protocol          = "TCP"
 
  default_action {
    type             = "forward"
