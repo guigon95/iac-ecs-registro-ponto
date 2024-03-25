@@ -45,7 +45,7 @@ output "apigw_endpoint" {
 
 
 resource "aws_apigatewayv2_authorizer" "auth" {
- api_id           = aws_apigatewayv2_api.gateway.id
+ api_id           = aws_apigatewayv2_api.apigw_http_endpoint.id
  authorizer_type = "JWT"
  identity_sources = ["$request.header.Authorization"]
  name             = "cognito-authorizer"
@@ -57,7 +57,7 @@ resource "aws_apigatewayv2_authorizer" "auth" {
 }
 
 resource "aws_apigatewayv2_integration" "int" {
- api_id           = aws_apigatewayv2_api.gateway.id
+ api_id           = aws_apigatewayv2_api.apigw_http_endpoint.id
  integration_type = "AWS_PROXY"
  connection_type = "INTERNET"
  integration_method = "POST"
@@ -66,7 +66,7 @@ resource "aws_apigatewayv2_integration" "int" {
 
 
 resource "aws_apigatewayv2_route" "route" {
- api_id    = aws_apigatewayv2_api.gateway.id
+ api_id    = aws_apigatewayv2_api.apigw_http_endpoint.id
  route_key = "GET example"
  target = "integrations/${aws_apigatewayv2_integration.int.id}"
  authorization_type = "JWT"
