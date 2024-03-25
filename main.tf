@@ -89,8 +89,9 @@ resource "aws_ecs_service" "registro-ponto-ecs-service" {
 
 
  network_configuration {
-   subnets          = [for subnet in aws_subnet.registro-ponto-private-subnet : subnet.id]
-   security_groups  = [aws_security_group.ecs_security_group.id]
+   subnets          = [aws_subnet.registro-ponto-private-subnet.id, aws_subnet.registro-ponto-public-subnet.id]
+   security_groups  = [aws_security_group.allow_web.id]
+   assign_public_ip = true
  }
 }
 
