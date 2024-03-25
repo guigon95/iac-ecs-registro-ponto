@@ -1,57 +1,34 @@
 # Create the API Gateway HTTP endpoint
-resource "aws_apigatewayv2_api" "apigw_http_endpoint" {
+resource "aws_api_gateway_rest_api" "apigw_http_endpoint" {
   name          = "registro-ponto-pvt-endpoint"
   protocol_type = "HTTP"
 }
 
-# Create the API Gateway HTTP_PROXY integration between the created API and the private load balancer via the VPC Link.
-# Ensure that the 'DependsOn' attribute has the VPC Link dependency.
-# This is to ensure that the VPC Link is created successfully before the integration and the API GW routes are created.
-resource "aws_apigatewayv2_integration" "apigw_integration" {
-  api_id           = aws_apigatewayv2_api.apigw_http_endpoint.id
-  integration_type = "HTTP_PROXY"
-  integration_uri  = aws_lb_listener.ecs_alb_listener.arn
-
-  integration_method = "ANY"
-  connection_type    = "VPC_LINK"
-  connection_id      = aws_apigatewayv2_vpc_link.vpclink_apigw_to_alb.id
-  payload_format_version = "1.0"
-  depends_on      = [aws_apigatewayv2_vpc_link.vpclink_apigw_to_alb,
-    aws_apigatewayv2_api.apigw_http_endpoint,
-    aws_lb_listener.ecs_alb_listener]
+resource "aws_api_gateway_resource" "aws_api_gateway_resource" {
+  rest_api_id = aws_api_gateway_rest_api.example.id
+  parent_id   = aws_api_gateway_rest_api.example.root_resource_id
+  path_part   = "{proxy+}"
 }
 
-# API GW route with ANY method
-resource "aws_apigatewayv2_route" "apigw_route" {
-  api_id    = aws_apigatewayv2_api.apigw_http_endpoint.id
-  route_key = "ANY /{proxy+}"
-  target = "integrations/${aws_apigatewayv2_integration.apigw_integration.id}"
-  depends_on  = [aws_apigatewayv2_integration.apigw_integration]
+resource "aws_api_gateway_method" "aws_api_gateway_method" {
+  rest_api_id   = aws_api_gateway_rest_api.example.id
+  resource_id   = aws_api_gateway_resource.example.id
+  http_method   = "ANY"
+  authorization = "NONE"
 }
 
-# Set a default stage
-resource "aws_apigatewayv2_stage" "apigw_stage" {
-  api_id = aws_apigatewayv2_api.apigw_http_endpoint.id
-  name   = "$default"
-  auto_deploy = true
-  depends_on  = [aws_apigatewayv2_api.apigw_http_endpoint]
+resource "aws_api_gateway_integration" "aws_api_gateway_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.example.id
+  resource_id             = aws_api_gateway_resource.example.id
+  http_method             = aws_api_gateway_method.example.http_method
+  type                    = "HTTP_PROXY"
+  integration_http_method = "ANY"
+  uri                     = "http://${aws_lb.example.dns_name}/{proxy}"
+  passthrough_behavior    = "WHEN_NO_MATCH"
 }
 
-# Generated API GW endpoint URL that can be used to access the application running on a private ECS Fargate cluster.
-output "apigw_endpoint" {
-  value = aws_apigatewayv2_api.apigw_http_endpoint.api_endpoint
-  description = "API Gateway Endpoint"
-}
-
-
-resource "aws_apigatewayv2_authorizer" "auth" {
- api_id           = aws_apigatewayv2_api.apigw_http_endpoint.id
- authorizer_type = "JWT"
- identity_sources = ["$request.header.Authorization"]
- name             = "cognito-authorizer"
-
- jwt_configuration {
-    audience = [aws_cognito_user_pool_client.client.id]
-    issuer   = "https://${aws_cognito_user_pool.pool.endpoint}"
- }
+resource "aws_api_gateway_deployment" "aws_api_gateway_deployment" {
+  depends_on = [aws_api_gateway_integration.example]
+  rest_api_id = aws_api_gateway_rest_api.example.id
+  stage_name = "prod"
 }
