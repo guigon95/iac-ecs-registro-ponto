@@ -16,6 +16,12 @@ resource "aws_api_gateway_method" "aws_api_gateway_method" {
   authorization = "NONE"
 }
 
+resource "aws_api_gateway_vpc_link" "vpc_link" {
+  name        = "my-vpc-link"
+  description = "VPC Link for API Gateway"
+  target_arns = [aws_lb.ecs_alb.arn]
+}
+
 resource "aws_api_gateway_integration" "aws_api_gateway_integration" {
   rest_api_id             = aws_api_gateway_rest_api.aws_api_gateway_rest_api.id
   resource_id             = aws_api_gateway_resource.aws_api_gateway_resource.id
@@ -23,7 +29,8 @@ resource "aws_api_gateway_integration" "aws_api_gateway_integration" {
   type                    = "HTTP_PROXY"
   integration_http_method = "ANY"
   uri                     = "http://${aws_lb.ecs_alb.dns_name}"
-  passthrough_behavior    = "WHEN_NO_MATCH"
+  connection_type         = "VPC_LINK"
+  connection_id           = aws_api_gateway_vpc_link.vpc_link.id
 }
 
 resource "aws_api_gateway_deployment" "aws_api_gateway_deployment" {
