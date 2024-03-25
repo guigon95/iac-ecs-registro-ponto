@@ -72,3 +72,9 @@ resource "aws_apigatewayv2_route" "route" {
  authorization_type = "JWT"
  authorizer_id = aws_apigatewayv2_authorizer.auth.id
 }
+
+data "aws_region" "current" {}
+
+output "current_region" {
+ value = data.aws_region.current.name
+}
