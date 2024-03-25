@@ -17,10 +17,6 @@ variable "secret_key" {
   type    = string
 }
 
-variable "lambda_name" {
-  type    = string
-}
-
 variable "desired_capacity" {
   description = "desired number of running nodes"
   default     = 2
