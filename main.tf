@@ -96,53 +96,53 @@ resource "aws_ecs_service" "registro-ponto-ecs-service" {
 }
 
 # Create the VPC Link configured with the private subnets. Security groups are kept empty here, but can be configured as required.
-resource "aws_apigatewayv2_vpc_link" "vpclink_apigw_to_alb" {
-  name        = "vpclink_apigw_to_alb"
-  security_group_ids = []
-
-  subnet_ids = [for subnet in aws_subnet.registro-ponto-public-subnet : subnet.id]
-}
+#resource "aws_apigatewayv2_vpc_link" "vpclink_apigw_to_alb" {
+#  name        = "vpclink_apigw_to_alb"
+#  security_group_ids = []
+#
+#  subnet_ids = [for subnet in aws_subnet.registro-ponto-public-subnet : subnet.id]
+#}
 
 # IGW for the public subnet
-resource "aws_internet_gateway" "registro-ponto-internet-gateway" {
-  vpc_id = aws_vpc.registro-ponto-vpc.id
-}
+#resource "aws_internet_gateway" "registro-ponto-internet-gateway" {
+#  vpc_id = aws_vpc.registro-ponto-vpc.id
+#}
 
 # Route the public subnet traffic through the IGW
-resource "aws_route" "internet_access" {
-  route_table_id         = "${aws_vpc.registro-ponto-vpc.main_route_table_id}"
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = "${aws_internet_gateway.registro-ponto-internet-gateway.id}"
-}
+#resource "aws_route" "internet_access" {
+#  route_table_id         = "${aws_vpc.registro-ponto-vpc.main_route_table_id}"
+#  destination_cidr_block = "0.0.0.0/0"
+#  gateway_id             = "${aws_internet_gateway.registro-ponto-internet-gateway.id}"
+#}
 
 # Create a NAT gateway with an EIP for each private subnet to get internet connectivity
-resource "aws_eip" "gw" {
-  count      = 2
-  domain        = "vpc"
-  depends_on = [aws_internet_gateway.registro-ponto-internet-gateway]
-}
-
-resource "aws_nat_gateway" "registro-ponto-nat-gateway" {
-  count      = 2
-  subnet_id     = "${element(aws_subnet.registro-ponto-public-subnet.*.id, count.index)}"
-  allocation_id = "${element(aws_eip.gw.*.id, count.index)}"
-}
+#resource "aws_eip" "gw" {
+#  count      = 2
+#  domain        = "vpc"
+#  depends_on = [aws_internet_gateway.registro-ponto-internet-gateway]
+#}
+#
+#resource "aws_nat_gateway" "registro-ponto-nat-gateway" {
+#  count      = 2
+#  subnet_id     = "${element(aws_subnet.registro-ponto-public-subnet.*.id, count.index)}"
+#  allocation_id = "${element(aws_eip.gw.*.id, count.index)}"
+#}
 
 # Create a new route table for the private subnets
 # And make it route non-local traffic through the NAT gateway to the internet
-resource "aws_route_table" "private" {
-  count  = 2
-  vpc_id = aws_vpc.registro-ponto-vpc.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    nat_gateway_id = "${element(aws_nat_gateway.registro-ponto-nat-gateway.*.id, count.index)}"
-  }
-}
-
-# Explicitely associate the newly created route tables to the private subnets (so they don't default to the main route table)
-resource "aws_route_table_association" "private" {
-  count          = 2
-  subnet_id      = "${element(aws_subnet.registro-ponto-private-subnet.*.id, count.index)}"
-  route_table_id = "${element(aws_route_table.private.*.id, count.index)}"
-}
+#resource "aws_route_table" "private" {
+#  count  = 2
+#  vpc_id = aws_vpc.registro-ponto-vpc.id
+#
+#  route {
+#    cidr_block = "0.0.0.0/0"
+#    nat_gateway_id = "${element(aws_nat_gateway.registro-ponto-nat-gateway.*.id, count.index)}"
+#  }
+#}
+#
+## Explicitely associate the newly created route tables to the private subnets (so they don't default to the main route table)
+#resource "aws_route_table_association" "private" {
+#  count          = 2
+#  subnet_id      = "${element(aws_subnet.registro-ponto-private-subnet.*.id, count.index)}"
+#  route_table_id = "${element(aws_route_table.private.*.id, count.index)}"
+#}
