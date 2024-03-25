@@ -21,7 +21,6 @@ resource "aws_lb_target_group" "alb_ecs_tg" {
    healthy_threshold   = "3"
    interval            = "30"
    protocol            = "TCP"
-   path                = "/actuator/health"
    timeout             = "15"
    unhealthy_threshold = "5"
  }
