@@ -59,3 +59,41 @@ resource "aws_api_gateway_method" "method" {
   http_method   = "GET"
   authorization = "NONE"
 }
+
+resource "aws_api_gateway_integration" "lambda_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.api_gateway.id
+  resource_id             = aws_api_gateway_resource.resource.id
+  http_method             = aws_api_gateway_method.method.http_method
+  integration_http_method = "POST"
+  type                    = "AWS" # Isso será alterado para "AWS" quando integrar com o ECS
+}
+
+resource "aws_api_gateway_method_response" "proxy" {
+  rest_api_id = aws_api_gateway_rest_api.api_gateway.id
+  resource_id = aws_api_gateway_resource.resource.id
+  http_method = aws_api_gateway_method.method.http_method
+  status_code = "200"
+}
+
+resource "aws_api_gateway_integration_response" "proxy" {
+  rest_api_id = aws_api_gateway_rest_api.api_gateway.id
+  resource_id = aws_api_gateway_resource.resource.id
+  http_method = aws_api_gateway_method.method.http_method
+  status_code = aws_api_gateway_method_response.proxy.status_code
+}
+
+resource "aws_api_gateway_vpc_link" "my_vpc_link" {
+  name        = "my-vpc-link"
+  target_arns = [aws_lb.ecs_alb.arn] # Substitua pelo ARN do seu Load Balancer do ECS
+}
+
+resource "aws_api_gateway_integration" "ecs_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.api_gateway.id
+  resource_id             = aws_api_gateway_resource.resource.id
+  http_method             = aws_api_gateway_method.method.http_method
+  integration_http_method = "POST"
+  type                    = "HTTP_PROXY"
+  uri                     = "http://${aws_lb.ecs_alb.dns_name}/mypath" # Substitua pelo endereço do seu ECS
+  connection_type         = "VPC_LINK"
+  connection_id           = aws_api_gateway_vpc_link.my_vpc_link.id
+}
