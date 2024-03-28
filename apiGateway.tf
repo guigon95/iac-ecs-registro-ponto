@@ -1,6 +1,7 @@
 # Create the API Gateway HTTP endpoint
 resource "aws_apigatewayv2_api" "apigw_http_endpoint" {
   name          = "registro-ponto-pvt-endpoint"
+description     = "registro-ponto-pvt-endpoint"
   protocol_type = "HTTP"
 }
 
